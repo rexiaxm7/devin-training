@@ -6,19 +6,25 @@ import (
 
 // Board represents the tic-tac-toe game board
 type Board struct {
-    Cells [9]string
+    Cells [25]string
+    Size  int
 }
 
 // NewBoard creates a new empty board
 func NewBoard() *Board {
+    cells := [25]string{}
+    for i := 0; i < 25; i++ {
+        cells[i] = " "
+    }
     return &Board{
-        Cells: [9]string{" ", " ", " ", " ", " ", " ", " ", " ", " "},
+        Cells: cells,
+        Size:  5,
     }
 }
 
 // IsValidMove checks if the move is valid
 func (b *Board) IsValidMove(position int) bool {
-    if position < 0 || position > 8 {
+    if position < 0 || position > 24 {
         return false
     }
     return b.Cells[position] == " "
@@ -42,21 +48,25 @@ func (b *Board) IsFull() bool {
 // Display prints the current state of the board
 func (b *Board) Display() {
     fmt.Println()
-    fmt.Printf(" %s | %s | %s \n", b.Cells[0], b.Cells[1], b.Cells[2])
-    fmt.Println("-----------")
-    fmt.Printf(" %s | %s | %s \n", b.Cells[3], b.Cells[4], b.Cells[5])
-    fmt.Println("-----------")
-    fmt.Printf(" %s | %s | %s \n", b.Cells[6], b.Cells[7], b.Cells[8])
+    for i := 0; i < b.Size; i++ {
+        fmt.Printf(" %s | %s | %s | %s | %s \n", 
+            b.Cells[i*5], b.Cells[i*5+1], b.Cells[i*5+2], b.Cells[i*5+3], b.Cells[i*5+4])
+        if i < b.Size-1 {
+            fmt.Println("-------------------")
+        }
+    }
     fmt.Println()
 }
 
 // DisplayWithPositions prints the board with position numbers
 func (b *Board) DisplayWithPositions() {
     fmt.Println("Positions:")
-    fmt.Println(" 0 | 1 | 2 ")
-    fmt.Println("-----------")
-    fmt.Println(" 3 | 4 | 5 ")
-    fmt.Println("-----------")
-    fmt.Println(" 6 | 7 | 8 ")
+    for i := 0; i < b.Size; i++ {
+        fmt.Printf(" %2d | %2d | %2d | %2d | %2d \n", 
+            i*5, i*5+1, i*5+2, i*5+3, i*5+4)
+        if i < b.Size-1 {
+            fmt.Println("-------------------")
+        }
+    }
     fmt.Println()
 }

@@ -39,7 +39,7 @@ func (g *Game) SwitchPlayer() {
 // GetPlayerMove gets the player's move
 func (g *Game) GetPlayerMove() int {
     for {
-        fmt.Printf("%s (%s)の番です。0-8の数字を入力してください: ", 
+        fmt.Printf("%s (%s)の番です。0-24の数字を入力してください: ", 
             g.CurrentPlayer().Name, g.CurrentPlayer().Symbol)
         
         g.Scanner.Scan()
@@ -47,13 +47,13 @@ func (g *Game) GetPlayerMove() int {
         
         position, err := strconv.Atoi(input)
         if err != nil {
-            fmt.Println("無効な入力です。0-8の数字を入力してください。")
+            fmt.Println("無効な入力です。0-24の数字を入力してください。")
             continue
         }
         
         if !g.Board.IsValidMove(position) {
-            if position < 0 || position > 8 {
-                fmt.Println("無効な入力です。0-8の数字を入力してください。")
+            if position < 0 || position > 24 {
+                fmt.Println("無効な入力です。0-24の数字を入力してください。")
             } else {
                 fmt.Println("そのマスはすでに埋まっています。別のマスを選んでください。")
             }
@@ -68,27 +68,62 @@ func (g *Game) GetPlayerMove() int {
 func (g *Game) CheckWin() bool {
     symbol := g.CurrentPlayer().Symbol
     cells := g.Board.Cells
+    size := g.Board.Size
     
     // Check rows
-    for i := 0; i <= 6; i += 3 {
-        if cells[i] == symbol && cells[i+1] == symbol && cells[i+2] == symbol {
-            return true
+    for row := 0; row < size; row++ {
+        for col := 0; col <= size-5; col++ {
+            idx := row*size + col
+            if cells[idx] == symbol && 
+               cells[idx+1] == symbol && 
+               cells[idx+2] == symbol && 
+               cells[idx+3] == symbol && 
+               cells[idx+4] == symbol {
+                return true
+            }
         }
     }
     
     // Check columns
-    for i := 0; i <= 2; i++ {
-        if cells[i] == symbol && cells[i+3] == symbol && cells[i+6] == symbol {
-            return true
+    for col := 0; col < size; col++ {
+        for row := 0; row <= size-5; row++ {
+            idx := row*size + col
+            if cells[idx] == symbol && 
+               cells[idx+size] == symbol && 
+               cells[idx+size*2] == symbol && 
+               cells[idx+size*3] == symbol && 
+               cells[idx+size*4] == symbol {
+                return true
+            }
         }
     }
     
-    // Check diagonals
-    if cells[0] == symbol && cells[4] == symbol && cells[8] == symbol {
-        return true
+    // Check diagonals (top-left to bottom-right)
+    for row := 0; row <= size-5; row++ {
+        for col := 0; col <= size-5; col++ {
+            idx := row*size + col
+            if cells[idx] == symbol && 
+               cells[idx+size+1] == symbol && 
+               cells[idx+size*2+2] == symbol && 
+               cells[idx+size*3+3] == symbol && 
+               cells[idx+size*4+4] == symbol {
+                return true
+            }
+        }
     }
-    if cells[2] == symbol && cells[4] == symbol && cells[6] == symbol {
-        return true
+    
+    // Check diagonals (top-right to bottom-left)
+    for row := 0; row <= size-5; row++ {
+        for col := 4; col < size; col++ {
+            idx := row*size + col
+            if cells[idx] == symbol && 
+               cells[idx+size-1] == symbol && 
+               cells[idx+size*2-2] == symbol && 
+               cells[idx+size*3-3] == symbol && 
+               cells[idx+size*4-4] == symbol {
+                return true
+            }
+        }
     }
     
     return false
